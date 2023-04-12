@@ -1,8 +1,10 @@
+profile-name: beta
+
 spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/admin
+    url: jdbc:postgresql://localhost:5432/board
     username: jyuka
     password: 1234
   jpa:
