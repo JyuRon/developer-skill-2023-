@@ -23,8 +23,15 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // root project --> settings.gradle 에 선언한 값과 동일해야함
+    implementation project(':module-common')
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel") {}
+
+
