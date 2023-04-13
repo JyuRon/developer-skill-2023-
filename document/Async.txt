@@ -23,3 +23,22 @@
 (4) @Bean(name = "defaultTaskExecutor", destroyMethod = "shutdown")
 - destroyMethod : thread pool 을 정의를 하였을떄 의도치 않게 해당 빈이 정의 되지 않을 경우를 방지
 - https://velog.io/@minwest/Spring-%EB%B9%88-%EC%83%9D%EB%AA%85%EC%A3%BC%EA%B8%B0-%EC%BD%9C%EB%B0%B1
+
+
+(5) SpringFramework Async 적용 순서
+- XXXConfig : @Configuration, @EnableAsync 추가
+- ThreadPoolTaskExecutor 빈 등록
+    @Bean(name = "defaultTaskExecutor", destroyMethod = "shutdown")
+    public ThreadPoolTaskExecutor defaultTaskExecutor(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(200);
+        executor.setMaxPoolSize(300);
+        return executor;
+    }
+
+- Async에 사용할 ThreadPool 정의
+    // @Async 사용시 public 으로 설정해야 한다.
+    @Async("defaultTaskExecutor")
+    public void sendMail(){
+        System.out.println("[sendMail] :: " + Thread.currentThread().getName());
+    }
