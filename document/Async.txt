@@ -1,0 +1,25 @@
+(1) ThreadPoolTaskExecutor 인자 설명
+- corePoolSize : 1개의 pool 에 최소 몇개의 thread 를 소유할것인지 설정, 일을 하던 안하던 리소스 점유
+    corePoolSize 값을 너무 크게 설저할 경우 side effect 고려해보기
+- maximumPullSize : 1개의 pool 에 소유가능한 최대 thread의 수
+- keepAliveTime : corePoolSize 보다 많은 thread가 할당되었을때 지정한 시간만큼 일을 하지 않으면 자원을 반납
+- unit : keepAliveTime의 시, 분, 초의 단위를 지정
+- workQueue : 요청을 대기시키는 공간, 순차적으로 task를 가져옴
+
+(2) ThreadPoolTaskExecutor 동작 순서
+- corePoolSize=3, maximumPullSize = 10떄 request 가 4개가 들어왔다.
+    1) corePoolSize 만큼 request 3개를 할당
+    2) 나머지 1개의 request를 위해 thread 생성을 하는 것이 아닌 queue에 대기
+    3) workQueue의 크기만큼 request가 차게 되면 이제서야 새로운 maximumPullSize 만큼 thread를 생성
+    4) queue, thread도 포화상태이면 exception 발생 -> 요청, 거절등의 핸들링 필요
+
+(3) ThreadPoolTaskExecutor 예외 발생 상황
+- corePoolSize < 0
+- keepAliveTime < 0
+- maximumPoolSize <= 0
+- maximumPoolSize < corePoolSize
+- workQueue is null
+
+(4) @Bean(name = "defaultTaskExecutor", destroyMethod = "shutdown")
+- destroyMethod : thread pool 을 정의를 하였을떄 의도치 않게 해당 빈이 정의 되지 않을 경우를 방지
+- https://velog.io/@minwest/Spring-%EB%B9%88-%EC%83%9D%EB%AA%85%EC%A3%BC%EA%B8%B0-%EC%BD%9C%EB%B0%B1
