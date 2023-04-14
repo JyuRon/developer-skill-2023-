@@ -15,4 +15,11 @@ public class DemoController {
     public String getController(){
         return demoService.get();
     }
+
+    @GetMapping("/post")
+    public String postController(){
+        return demoService.post();
+    }
+
+
 }
