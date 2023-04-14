@@ -20,7 +20,7 @@ public class DemoFeignInterceptor implements RequestInterceptor {
         }
 
         // Feign Client 의 요청이 post 인 경우
-        if(template.method() == Request.HttpMethod.POST.name()){
+        if(template.method() == Request.HttpMethod.POST.name() && template.body() != null){
             String encodedRequestBody = StringUtils.toEncodedString(template.body(), StandardCharsets.UTF_8);
 
             System.out.println("[POST] [DemoFeignInterceptor] requestBody : " + encodedRequestBody);
