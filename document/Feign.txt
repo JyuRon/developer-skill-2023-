@@ -1,0 +1,39 @@
+(0) Feign 이란?
+- 의존성 추가 : spring-cloud-starter-openfeign
+- RestTemplate 과 동일한 기능을 수행함
+- 외부서버와통신시 Connection / Read Timeout 설정이 가능하다.
+- interface에 @FeignClient 를 붙여 구현하여 설정
+
+
+(1) Feign Interceptor
+- 외부로 요청이 나가기 전에 만약 공통적으로 처리해야하는 부분이 있다면 Interceptor를 재정의하여 처리가 가능하다.
+- RequestInterceptor 를 상속받아 요청에 대한 로깅처리
+- get 의 경우 queryParam 을 확인 할 수 있다.
+- post 의 경우 responseBody 값을 확인이 가능하며 가공 이후 치환하여 사용 할 수 있다.
+
+
+(2) Feign CustomLogger
+- Request / Response 등 운영을 하기 위한 적절한 Log를 남길 수 있다.
+- Feign 에서 제공하는 Logger 를 상속받아 구현
+- 메소드 매개인자 설명
+    * configKey : 실행된 FeignClientClassName#method 형식으로 자동 주입
+    * logRequest : properties 에서 값을 읽어옴
+    * logAndRebufferResponse : 요청과 응답 시간간의 차이
+- 아래의 3개 메소드를 오버라이딩 하여 커스텀을 진행하였으며 logAndRebufferResponse 의 경우 기존 제공하던 코드를 가져와 처리시간이 특정값을 넘어가면 추가로그를 출력하는 기능을 추가
+    * log method : 요청, 응답에 대한 로깅 포맷을 지정
+    * logRequest : 요청에 대한 로깅처리
+    * logAndRebufferResponse : 응답에 대한 로깅 처리
+
+(3) Feign ErrorDecoder
+- Feign 을 사용하였는데 응답 코드가 2xx 가 아닌 오류 코드가 전달되는 경우 에러를 발생시킴
+- 요청에대해 정상응답이 아닌경우 핸들링이 가능하다.
+
+
+(4) config bean 전역, 지역 등록
+[지역 등록]
+- DemoFeignConfig의 경우 @FeignClient(configuration = DemoFeignConfig.class) 에서 설장한 클래스
+- 즉 해당 client(demo-client) 에 대한 interceptor 를 추가한 개념
+
+[전역 등록]
+- 이전 DemoFeignClient.java 에서 @FeignClient(configuration = DemoFeignConfig.class) 에 대한 설정으로 특정 client 에 대해서만 interceptor 적용을 진행
+- 지정되지 않는 Feign Configuration Bean 의 경우 모든 client 에 대해 전역으로 적용됨
