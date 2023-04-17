@@ -68,9 +68,35 @@
         </rollingPolicy>
     </appender>
 
+
+    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <!-- 완전히 일치하냐 -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 맞지 않으면?? -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!-- MDC 관련 로깅 출력 포맷 설정 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                [WARN] ${LOG_PATTERN}
+            </pattern>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+        </encoder>
+
+        <file>${LOG_DIR}/warn.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archive/warn.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>1KB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="REQUEST1" />
         <appender-ref ref="MDC" />
+        <appender-ref ref="WARN" />
     </root>
 
 </included>
