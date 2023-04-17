@@ -1,0 +1,88 @@
+1. Slf4j 와 Logback
+- Slf4j 는 Simple Logging For Java 로 인터페이스 형태이다.
+- 이런 인터페이스를 구현한 것이 Logback, log4j 가 존재한다.
+
+
+2. Logback appender 종류
+- ConsoleAppender : 콘솔에 log를 출력
+- FileAppender : 파일 단위로 log 를 저장
+- RollingFileAppender : (설정 옵션에 따라) log 를 여러 파일로 나누어 저장
+- SMTPAppender : log 를 메일로 전송 하여 기
+록
+- DBAppender: log 를 DB에 저장
+
+3. spring 기본 로깅 설정
+- 기존 spring 로깅의 경우 default 로 logback 이 동작
+- logback-spring.xml 파일을 빈 파일로 생성하면 덮어쓰기가 되어 아무런 로그를 출력하지 않음
+
+
+4. profile 설정
+- logback-spring.xml 의 경우 매개인자를 받을 수 있어 이를 응용한 profile 별 설정이 가능하다.
+- <include resource="logback-spring-${spring.profiles.active}.xml" />
+
+
+5. ConsoleAdapter(logback-spring-local.xml)
+- [Logback] logback ConsoleAdapter : adapter 별 로그 레벨 설정 및 로깅 포맷 커스텀 적용
+- spring default 의 경우 기본적으로 제공하는 console-appender.xml 이 include 되어 있다.
+
+- filter
+    * appender 의 level filter 를 지정, 미지정시 모든 종류의 로그가 출력
+    * ThresholdFilter : thread 별 수행 로그를 출력
+    * <level>INFO</level> : 해당 adapter 는 info 이상의 로그만 출력되도록 설정
+
+- logging format 문법
+    [CONSOLE2] [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] [%logger{400}:%line] -%msg%n
+    [CONSOLE2] [INFO ] 2023-04-17 14:18:24 [main] [LogbackApplication:637] -The following 1 profile is active: "local"
+
+    * [%-5level] : log level 을 5자리로 출력
+    * %d{yyyy-MM-dd HH:mm:ss} : log 출력 시간 포맷을 설정
+    * %thread : 프로그램을 수행한 쓰래드의 이름을 출력
+    * %logger{400} : 로그가 출력된 클래스명 출력, 숫자 길이에 따라 패키지명이 약어, 풀네임, 생략이 가능
+    * %line : 로그가 출력되는 클래스의 라인 num 을 출력
+    * %msg : log.info() 안에 들어가는 내용을 출력
+    * %n : 개행 문자를 추가하여 포맷팅
+
+6. RollingFileAdapter(logback-spring-prod.xml)
+- org/springframework/boot/logging/logback/file-adapter.xml 를 바탕으로 구현
+- rollingPolicy 속성별 정리 링크
+    https://velog.io/@shawnhansh/SpringBoot-logback-%EB%8D%94-%EC%89%BD%EA%B2%8C-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0application.properties%EC%99%80-logback-spring.xml
+
+- rollingPolicy
+     * maxFileSize : 로그 파일의 최대 크기, request1.log 파일의 크기가 넘어가면 rolling 정책 수행
+     * maxHistory : 아카이브 처리된 파일 최대 보관 주기 (단위 : 일)
+     * cleanHistoryOnStart : true일 경우 어플리케이션을 시작할 때 기존 아카이빙된 로그 파일들을 삭제합니다.
+     * totalSizeCap :
+        아카이빙한 로그 파일의 최대 사이즈를 설정합니다.
+        기본값인 0일 때는 최대 용량을 설정하지 않는다는 의미
+        100MB등 용량을 명시할 경우 아카이빙 된 로그 파일 용량의 합이 해당 용량을 초과할 때 오래된 로그부터 삭제
+        maxHistory가 먼저 적용된 뒤에 적용
+
+
+7. properties 파일을 활용한 변수 선언
+- properties 파일에 LOG_DIR=log 로 작성된 파일이 존재한다고 가정
+- appender 를 설정하는 xml 파일 적용 방법
+    <property resource="logback-variables.properties" />
+    ${LOG_DIR} 의 형태로 변수 호출하여 사용
+
+
+8. MDC (MdcController)
+- 쓰레드 별로 MDC 객체(Map)에 들어있는 key,value 를 관리할 수 있다.
+- 멀티쓰레드 환경에서 로그를 남길때 사용하며 로그백에서 해당 저장되어 있는 값을 동적으로 가져와 출력시키기 위함
+- 동일 쓰레드가 정리가 되지 않은 상태에서 job 을 호출할 경우 의도치 앟은 값이 리턴될 수 있기에 clear 메소드를 페어로 사용하는 것을 권장
+- adapter를 설정하는 xml 에서 로깅 출력 포맷에 %X{key} 형태로 불러와 사용이 가능하다.
+
+
+
+9. 특정 로그 레벨만 모아서 처리하는 방법
+- 기존 adapter에 filter level 를 warn 으로 설정하였다면 warn 을 포함하고 그 상위 레벨인 error 까지 함께 출력이 되었다.
+- warn 로그만 모아서 따로 관리하고 싶을떄 onMatch, onMismatch 속성을 활용하여 적용할 수 있다.
+
+
+10. Logger 설정 2가지 (QueryController1, QueryController2)
+- Logger 란??
+    <root> 속성에 추가하지 않고 별도의 설정으로 고유한 로깅 처리를 가능하게 한다.
+    logger는 기본적으로 정의한 패키지의 조상으로부터 모든 appender 를 상속받음
+    이러한 이유로 특별한 설정이 없다면 appender-ref 에 REQUEST1, MDC, WARN 이 포함됨
+    additivity=false 로 상속을 받지 않고 온전히 설정한 appender 만 사용이 가능
+- @Slf4j(topic = "SQL_LOG1")
+- public static final Logger log = LoggerFactory.getLogger("SQL_LOG2");
