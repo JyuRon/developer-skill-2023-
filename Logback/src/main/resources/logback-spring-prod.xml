@@ -2,6 +2,7 @@
 
     <property resource="logback-variables.properties" />
     <!--
+        RollingFileApender 설정
         default RollingFileAppender(file-adapter.xml) 를 바탕으로 커스텀
         기본적으로 file-adapter.xml 에는 rolling 정책이 포함됨
     -->
@@ -51,6 +52,7 @@
     </appender>
 
 
+    <!-- MDC 관련 설정 -->
     <appender name="MDC" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- MDC 관련 로깅 출력 포맷 설정 -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -69,6 +71,7 @@
     </appender>
 
 
+    <!-- 특정 로그 레벨만을 출력하는 설정 -->
     <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>WARN</level>
@@ -77,7 +80,6 @@
             <!-- 맞지 않으면?? -->
             <onMismatch>DENY</onMismatch>
         </filter>
-        <!-- MDC 관련 로깅 출력 포맷 설정 -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
                 [WARN] ${LOG_PATTERN}
