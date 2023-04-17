@@ -95,10 +95,38 @@
         </rollingPolicy>
     </appender>
 
+
+    <!-- logger 관련 설정 -->
+    <appender name="QUERY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[QUERY] ${LOG_PATTERN}</pattern>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+        </encoder>
+        <file>${LOG_DIR}/query1.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archive/query1.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>1KB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="REQUEST1" />
         <appender-ref ref="MDC" />
         <appender-ref ref="WARN" />
     </root>
+
+    <!--
+        logger는 기본적으로 정의한 패키지의 조상으로부터 모든 appender 를 상속받음
+        이러한 이유로 특별한 설정이 없다면 appender-ref 에 REQUEST1, MDC, WARN 이 포함됨
+        additivity=false 로 상속을 받지 않고 온전히 설정한 appender 만 사용이 가능
+     -->
+    <logger name="SQL_LOG1" level="INFO" additivity="false">
+        <appender-ref ref="QUERY" />
+    </logger>
+
+    <logger name="SQL_LOG2" level="INFO" additivity="false">
+        <appender-ref ref="QUERY" />
+    </logger>
 
 </included>
