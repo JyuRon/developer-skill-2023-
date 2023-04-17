@@ -1,0 +1,55 @@
+<included>
+    <!--
+    * 기본적으로 제공하는 console-appender 를 사용하기 위한 선언
+    * console-appender.xml 의 내용으로 appender 속성을 포함한 하위 내용으로 치환됨
+    * ${CONSOLE_LOG_PATTERN} : logback-spring.xml 에 include 된 defaults.xml 에 해당 property 값이 선언됨
+    * ${CONSOLE_LOG_CHARSET} : logback-spring.xml 에 include 된 defaults.xml 에 해당 property 값이 선언됨
+
+    <included>
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>${CONSOLE_LOG_CHARSET}</charset>
+            </encoder>
+        </appender>
+    </included>
+    -->
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+
+    <!-- default console-adapter 를 바탕으로 커스텀 -->
+    <appender name="CONSOLE2" class="ch.qos.logback.core.ConsoleAppender">
+        <!--
+            appender 의 level filter 를 지정, 미지정시 모든 종류의 로그가 출력
+            ThresholdFilter : thread 별 수행 로그를 출력
+            <level>INFO</level> : 해당 adapter 는 info 이상의 로그만 출력되도록 설정
+        -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <layout>
+            <pattern>
+                <!--
+                    [CONSOLE2] [INFO ] 2023-04-17 14:18:24 [main] [LogbackApplication:637] -The following 1 profile is active: "local"
+                    * [%-5level] : log level 을 5자리로 출력
+                    * %d{yyyy-MM-dd HH:mm:ss} : log 출력 시간 포맷을 설정
+                    * %thread : 프로그램을 수행한 쓰래드의 이름을 출력
+                    * %logger{400} : 로그가 출력된 클래스명 출력, 숫자 길이에 따라 패키지명이 약어, 풀네임, 생략이 가능
+                    * %line : 로그가 출력되는 클래스의 라인 num 을 출력
+                    * %msg : log.info() 안에 들어가는 내용을 출력
+                    * %n : 개행 문자를 추가하여 포맷팅
+                -->
+                [CONSOLE2] [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] [%logger{400}:%line] -%msg%n
+            </pattern>
+        </layout>
+    </appender>
+
+    <!--
+        TRACE < DEBUG < INFO < WARN < ERROR
+     -->
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE2" />
+    </root>
+
+</included>
