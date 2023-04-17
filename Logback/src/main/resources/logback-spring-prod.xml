@@ -1,4 +1,6 @@
 <included>
+
+    <property resource="logback-variables.properties" />
     <!--
         default RollingFileAppender(file-adapter.xml) 를 바탕으로 커스텀
         기본적으로 file-adapter.xml 에는 rolling 정책이 포함됨
@@ -8,7 +10,7 @@
         <!-- 로깅 출력 포맷 설정 -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
-                [REQUEST1] [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] [%logger{400}:%line] -%msg%n
+                [REQUEST1] ${LOG_PATTERN}
             </pattern>
             <!--
                 로깅 출력 패턴을 보여줄지를 결정한다.
@@ -18,13 +20,13 @@
         </encoder>
 
         <!-- 로깅 처리될 파일 명 설정 -->
-        <file>logs/request1.log</file>
+        <file>${LOG_DIR}/request1.log</file>
 
         <!-- rolling 정책 설정 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 
             <!-- 생성될 로그 파일 명의 패턴 정의 -->
-            <fileNamePattern>logs/archive/request1.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/archive/request1.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
 
             <!-- 로그 파일의 최대 크기, request1.log 파일의 크기가 넘어가면 rolling 정책 수행 -->
             <maxFileSize>1KB</maxFileSize>
