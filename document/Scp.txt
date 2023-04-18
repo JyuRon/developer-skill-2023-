@@ -1,0 +1,28 @@
+Q. 어떤 상황에 사용할까?
+1. local -> remote
+    ex) SSL 인증서
+2. remote -> local
+    ex) Heap Dump 파일
+3. remote -> remote
+    ex) Server Config 파일
+
+
+* Feature 알아보기
+    - SSH를 사용하므로 SSH Key 혹은 Password가 필요하다.
+    - 콜론(“:”)을 사용하여 server location과 directory location을 구분한다.
+    - SCP 명령어를 사용하기 위해선 Source File에 대한 Read 권한과 Target Server에 Write 권한이 있어야한다.
+    - 만약 동일한 File Name + File Path가 Target Server에 존재한다면 경고없이 Overwrite를 한다.
+
+* 명령어
+## 사용법
+    scp [option] [user@src_host]:filePath [user@target_host]:filePath
+## 일반적인 상황
+    scp file.txt remote_username@1.1.1.1:/remote/directory
+## 파일명을 다르게 저장
+    scp file.txt remote_username@1.1.1.1:/remote/directory/NEW_FILE_NAME.txt
+## 특정 포트로 전송
+    scp -P 1234 file.txt remote_username@1.1.1.1:/remote/directory
+## Directory 복사 & 전송
+    scp -r /local/directory remote_username@1.1.1.1:/remote/directory
+
+
